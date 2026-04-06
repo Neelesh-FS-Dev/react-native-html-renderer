@@ -10,7 +10,7 @@
     "build:ios": "react-native build-ios --mode Debug",
     "web": "vite",
     "build:web": "vite build",
-    "postinstall": "if [ \"$(uname)\" = \"Darwin\" ]; then cd ios && pod install && cd ..; fi"
+    "postinstall": "node ./scripts/postinstall.js"
   },
   "dependencies": {
     "react": "19.2.4",
