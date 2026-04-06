@@ -1,6 +1,6 @@
 {
-  "name": "react-native-html-renderer",
-  "version": "0.2.0",
+  "name": "@neeleshyadav/react-native-html-renderer",
+  "version": "1.1.0",
   "description": "Renders HTML into 100% native React Native views — actively maintained, TypeScript-first.",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
