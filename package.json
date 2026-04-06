@@ -1,5 +1,5 @@
 {
-  "name": "@neeleshyadav/react-native-html-renderer",
+  "name": "@neelesh-fs-dev/react-native-html-renderer",
   "version": "1.1.1",
   "description": "Renders HTML into 100% native React Native views — actively maintained, TypeScript-first.",
   "main": "./lib/module/index.js",
@@ -63,7 +63,7 @@
   },
   "homepage": "https://github.com/Neelesh-FS-Dev/react-native-html-renderer#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^20.5.0",
