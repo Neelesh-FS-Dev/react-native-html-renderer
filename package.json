@@ -1,6 +1,6 @@
 {
   "name": "@neeleshyadav/react-native-html-renderer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Renders HTML into 100% native React Native views — actively maintained, TypeScript-first.",
   "main": "./lib/module/index.js",
   "types": "./lib/typescript/src/index.d.ts",
@@ -36,11 +36,21 @@
     "html",
     "renderer",
     "render-html",
-    "native",
-    "views",
+    "html-to-native",
+    "html-parser",
+    "html-renderer",
+    "react-native-render-html",
+    "react-native-html",
+    "react-native-webview-alternative",
+    "native-views",
+    "inline-css",
+    "xss-sanitization",
+    "accessibility",
+    "dark-mode",
     "typescript",
     "ios",
-    "android"
+    "android",
+    "expo"
   ],
   "repository": {
     "type": "git",
