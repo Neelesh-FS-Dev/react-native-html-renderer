@@ -63,7 +63,7 @@
   },
   "homepage": "https://github.com/Neelesh-FS-Dev/react-native-html-renderer#readme",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "access": "public"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^20.5.0",
