@@ -6,16 +6,19 @@ const DANGEROUS_TAGS = new Set([
   'iframe',
   'object',
   'embed',
-  'form',
   'applet',
   'base',
-  'svg',
   'math',
   'frame',
   'frameset',
   'template',
   'noscript',
 ]);
+
+// svg and form previously in DANGEROUS_TAGS. They are now preserved so the
+// renderer can draw inline SVG and interactive forms. Nested <script>,
+// event handlers, and unsafe URL schemes are still stripped by the recursive
+// sanitizer below.
 
 /** Attributes that carry URLs and must be checked for dangerous schemes. */
 const URL_ATTRIBUTES = new Set([
@@ -55,7 +58,12 @@ const MAX_DEPTH = 100;
  */
 function normalizeUrl(url: string): string {
   return url
-    .replace(/[\x00-\x1f\x7f]/g, '')
+    .split('')
+    .filter((c) => {
+      const code = c.charCodeAt(0);
+      return code > 0x1f && code !== 0x7f;
+    })
+    .join('')
     .trim()
     .toLowerCase();
 }

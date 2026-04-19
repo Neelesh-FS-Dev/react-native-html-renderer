@@ -37,18 +37,29 @@ describe('sanitizeDOM', () => {
     expect(sanitizeDOM([el('object'), el('embed')])).toHaveLength(0);
   });
 
-  it('strips form tags', () => {
-    expect(
-      sanitizeDOM([el('form', { action: '/submit' }, [el('input')])])
-    ).toHaveLength(0);
+  it('preserves form tags (content is still sanitized)', () => {
+    // form is now interactive; nested scripts/on* handlers still stripped
+    const result = sanitizeDOM([
+      el('form', { action: '/submit', onsubmit: 'alert(1)' }, [el('input')]),
+    ]);
+    expect(result).toHaveLength(1);
+    const form = result[0] as { attributes: Record<string, string> };
+    expect(form.attributes).not.toHaveProperty('onsubmit');
   });
 
   it('strips base tags', () => {
     expect(sanitizeDOM([el('base', { href: '/' })])).toHaveLength(0);
   });
 
-  it('strips svg tags', () => {
-    expect(sanitizeDOM([el('svg')])).toHaveLength(0);
+  it('preserves svg tags for inline rendering', () => {
+    // svg is now rendered by SvgTag; scripts inside are still stripped
+    const result = sanitizeDOM([
+      el('svg', {}, [el('script', {}, []), el('rect')]),
+    ]);
+    expect(result).toHaveLength(1);
+    const svg = result[0] as { children: unknown[] };
+    // only rect survives, script inside svg is dropped
+    expect(svg.children).toHaveLength(1);
   });
 
   it('strips math tags', () => {

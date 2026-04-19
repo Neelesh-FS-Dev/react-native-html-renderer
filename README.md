@@ -9,6 +9,20 @@ Renders HTML into 100% native React Native views — actively maintained, TypeSc
 
 A modern replacement for the abandoned `react-native-render-html`.
 
+## What's new in 1.3
+
+- **Interactive forms** — checkboxes, radios, text inputs and selects are now toggleable/editable. `onFormChange` emits every change.
+- **Plugin system** — `registerRenderer`, `installPlugin` and a `plugins` prop for third-party custom tag handlers.
+- **Inline SVG** — built-in renderer for `<rect>`, `<circle>`, `<ellipse>`, `<line>`, `<text>` and groups; pass `svgRenderer` to delegate to `react-native-svg`.
+- **Video/audio adapters** — `videoRenderer` / `audioRenderer` props let you plug in `expo-video`, `expo-av` or `react-native-video`.
+- **Performance** — `virtualized` renders the top-level doc in a `FlatList`; `lazyLoadImages` defers off-screen image fetches.
+- **CSS enhancements** — `mediaQueries` prop for responsive styles, inline CSS-Grid simulation (`display: grid; grid-template-columns: repeat(N, 1fr)`), flexbox `gap` passthrough.
+- **i18n** — automatic RTL direction from `dir`/`lang`, `I18nOptions` prop, `formatNumber` helper.
+- **Utility functions** — `extractLinks`, `extractImages`, `htmlToText`, `generateTOC`, `markdownToHtml`.
+- **Dev tools** — `inspectTree`, `formatInspectorTree`, `profile`, `accessibilityAudit`.
+- **Lifecycle callbacks** — `onBeforeRender`, `onAfterRender`, `onMeasure`.
+- **Advanced caching** — `configurePersistentCache` (AsyncStorage/MMKV-compatible), `preloadHtml`, `preloadImages`, TTL, `clearAllCaches`.
+
 ## Table of Contents
 
 - [Requirements](#requirements)
@@ -26,6 +40,7 @@ A modern replacement for the abandoned `react-native-render-html`.
 - [Utility Exports](#utility-exports)
 - [Image Handling](#image-handling)
 - [Debug Mode](#debug-mode)
+- [Advanced Features](#advanced-features)
 - [Limitations](#limitations)
 - [Migration from react-native-render-html v6](#migration-from-react-native-render-html-v6)
 - [Contributing](#contributing)
@@ -368,14 +383,151 @@ Set `debug={true}` to enable:
 - Red border drawn around every rendered node
 - Color scheme logged to console
 
+## Advanced Features
+
+### Interactive forms
+
+```tsx
+<HtmlRenderer
+  html='<label>Name: <input name="name" value="Ada" /></label><input type="checkbox" name="agree" />'
+  contentWidth={width}
+  initialFormState={{ agree: false }}
+  onFormChange={(field, nextState) => console.log(field, nextState)}
+/>
+```
+
+### Plugin system
+
+```tsx
+import { installPlugin, registerRenderer } from 'react-native-html-renderer';
+
+installPlugin({
+  name: 'highlight',
+  renderers: {
+    mark: ({ children }) => <Text style={{ backgroundColor: 'yellow' }}>{children}</Text>,
+  },
+});
+
+// Or per-instance:
+<HtmlRenderer html={html} contentWidth={w} plugins={[myPlugin]} />
+```
+
+### Lazy images + virtualization
+
+```tsx
+<HtmlRenderer html={longDoc} contentWidth={w} lazyLoadImages virtualized />
+```
+
+### Media queries
+
+```tsx
+<HtmlRenderer
+  html={html}
+  contentWidth={width}
+  mediaQueries={[
+    { maxWidth: 600, tagsStyles: { h1: { fontSize: 20 } } },
+    { minWidth: 601, tagsStyles: { h1: { fontSize: 32 } } },
+  ]}
+/>
+```
+
+### CSS Grid (simulated)
+
+```html
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8">
+  <div>A</div><div>B</div><div>C</div>
+</div>
+```
+
+### SVG + media adapters
+
+```tsx
+// Built-in inline SVG (rect, circle, ellipse, line, text, g).
+<HtmlRenderer html='<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="blue"/></svg>' contentWidth={w} />
+
+// Delegate to react-native-svg / expo-video
+<HtmlRenderer
+  html={html}
+  contentWidth={w}
+  svgRenderer={myReactNativeSvgRenderer}
+  videoRenderer={myExpoVideoRenderer}
+  audioRenderer={myExpoAvRenderer}
+/>
+```
+
+### i18n (RTL + locale)
+
+Direction is auto-detected from `dir="rtl"` or an RTL `lang` code (ar, he, fa, ur, …). Override via `i18n`:
+
+```tsx
+<HtmlRenderer html='<p lang="ar">مرحبا</p>' contentWidth={w} i18n={{ locale: 'ar-SA' }} />
+```
+
+### Utility functions
+
+```ts
+import {
+  extractLinks,
+  extractImages,
+  htmlToText,
+  generateTOC,
+  markdownToHtml,
+} from 'react-native-html-renderer';
+
+extractLinks('<a href="/x">go</a>');        // [{ href: '/x', text: 'go', attributes: {…} }]
+extractImages('<img src="a.png" alt="a"/>'); // [{ src: 'a.png', alt: 'a', … }]
+htmlToText('<p>Hi <b>world</b></p>');        // 'Hi world'
+generateTOC('<h1>One</h1><h2>Two</h2>');     // [{ level:1, text:'One', id:'one' }, …]
+markdownToHtml('# Title\n\nHello **world**');
+```
+
+### Dev tools
+
+```ts
+import { inspectTree, formatInspectorTree, profile, accessibilityAudit } from 'react-native-html-renderer';
+
+console.log(formatInspectorTree(inspectTree(parsed)));
+console.log(accessibilityAudit(parsed)); // [{ rule, message, tag, … }]
+profile('render', () => doWork(), (s) => console.log(s.durationMs));
+```
+
+### Lifecycle callbacks
+
+```tsx
+<HtmlRenderer
+  html={html}
+  contentWidth={w}
+  onBeforeRender={(nodes) => console.log('parsed', nodes.length)}
+  onAfterRender={(m) => console.log('rendered in', m.durationMs, 'ms')}
+  onMeasure={(layout) => console.log('root layout', layout)}
+/>
+```
+
+### Persistent cache + preload
+
+```ts
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  configurePersistentCache,
+  preloadHtml,
+  preloadImages,
+  clearAllCaches,
+} from 'react-native-html-renderer';
+
+configurePersistentCache(AsyncStorage, 6 * 60 * 60 * 1000); // 6h TTL
+await preloadHtml('<h1>Hi</h1>');
+await preloadImages(['https://example.com/a.png']);
+```
+
 ## Limitations
 
-- **Form elements are read-only** — `<input>`, `<textarea>`, `<select>`, `<button>` render as visual representations but are not interactive
-- **Video and audio are placeholders** — `<video>` and `<audio>` render placeholder views, not playable media (use custom renderers to integrate a media player)
-- **No CSS cascade beyond inline** — only inline `style` attributes, tag/class/id overrides, and default styles are supported (no external stylesheets, no `<style>` blocks)
+- **CSS cascade** — inline `style` attributes, tag/class/id overrides, media queries, and default styles are supported (no external stylesheets, no `<style>` blocks)
 - **Limited CSS properties** — only properties supported by React Native's style system are converted (see `css-to-react-native` for the full list)
+- **CSS Grid is simulated** — `display:grid` + `repeat(N, 1fr)` columns are mapped to flexbox; gradient/explicit-area grids are not supported
 - **No CSS animations or transitions**
 - **No web component support** (`<slot>`, `<template>`, shadow DOM)
+- **Built-in SVG is minimal** — rect/circle/ellipse/line/text/g only; use `svgRenderer` + `react-native-svg` for paths/gradients
+- **No native video/audio** — pass `videoRenderer` / `audioRenderer` to wire in `expo-video`/`expo-av`/`react-native-video`
 - **Tables may overflow** — wide tables are wrapped in a horizontal `ScrollView`
 
 ## Migration from [react-native-render-html](https://github.com/meliorence/react-native-render-html) v6

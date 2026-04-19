@@ -13,8 +13,14 @@ interface MediaTagProps {
   ctx: HtmlRendererContextValue;
 }
 
+const audioHeightStyle: ViewStyle = {
+  height: 48,
+};
+
 /**
- * Placeholder renderers for `<video>` and `<audio>` tags.
+ * `<video>` renderer. Delegates to `ctx.videoRenderer` if provided, otherwise
+ * renders a placeholder. Users can wire `expo-video` or `react-native-video`
+ * via the `videoRenderer` prop on HtmlRenderer.
  */
 export const VideoTag = memo(function VideoTag({
   node,
@@ -22,6 +28,19 @@ export const VideoTag = memo(function VideoTag({
   nodeKey,
   ctx,
 }: MediaTagProps) {
+  if (ctx.videoRenderer) {
+    const result = ctx.videoRenderer({
+      node,
+      children: [],
+      style,
+      attributes: node.attributes,
+      passProps: ctx.renderersProps.video ?? {},
+      renderChildren: () => [],
+      contentWidth: ctx.contentWidth,
+    });
+    return <View key={nodeKey}>{result}</View>;
+  }
+
   const width = Math.min(ctx.contentWidth, 320);
   const label = node.attributes['aria-label'] ?? 'Video content';
 
@@ -41,17 +60,34 @@ export const VideoTag = memo(function VideoTag({
   );
 });
 
+/**
+ * `<audio>` renderer. Delegates to `ctx.audioRenderer` if provided.
+ */
 export const AudioTag = memo(function AudioTag({
   node,
   style,
   nodeKey,
+  ctx,
 }: MediaTagProps) {
+  if (ctx.audioRenderer) {
+    const result = ctx.audioRenderer({
+      node,
+      children: [],
+      style,
+      attributes: node.attributes,
+      passProps: ctx.renderersProps.audio ?? {},
+      renderChildren: () => [],
+      contentWidth: ctx.contentWidth,
+    });
+    return <View key={nodeKey}>{result}</View>;
+  }
+
   const label = node.attributes['aria-label'] ?? 'Audio content';
 
   return (
     <View
       key={nodeKey}
-      style={[placeholderStyle, style as ViewStyle, { height: 48 }]}
+      style={[placeholderStyle, style as ViewStyle, audioHeightStyle]}
       accessibilityLabel={label}
     >
       <Text style={iconStyle}>{'\u266B'}</Text>

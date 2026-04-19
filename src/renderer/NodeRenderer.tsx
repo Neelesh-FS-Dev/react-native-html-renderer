@@ -13,6 +13,7 @@ import type {
   RNStyle,
 } from '../types';
 import { getDefaultTagStyles, mergeStylesForElement } from '../styles';
+import { resolveGridLayout } from '../styles/grid';
 import { INLINE_TAGS, TEXT_BLOCK_TAGS, isInlineContent } from '../utils';
 import { getAccessibilityProps } from '../utils/accessibility';
 import {
@@ -29,6 +30,7 @@ import {
   SelectTag,
   VideoTag,
   AudioTag,
+  SvgTag,
 } from './tags';
 
 /**
@@ -212,11 +214,7 @@ function renderElement(
   // Table row
   if (tag === 'tr') {
     return (
-      <View
-        key={key}
-        style={[style as ViewStyle, { flexDirection: 'row' }]}
-        {...a11y}
-      >
+      <View key={key} style={[style as ViewStyle, rowStyle]} {...a11y}>
         {renderNodes(node.children, ctx, key)}
       </View>
     );
@@ -259,6 +257,42 @@ function renderElement(
   if (tag === 'audio') {
     return (
       <AudioTag key={key} node={node} style={style} nodeKey={key} ctx={ctx} />
+    );
+  }
+
+  // Inline SVG
+  if (tag === 'svg') {
+    return (
+      <SvgTag key={key} node={node} style={style} nodeKey={key} ctx={ctx} />
+    );
+  }
+
+  // CSS Grid simulation on any block-level container
+  const gridLayout = resolveGridLayout(
+    node.attributes.style,
+    node.children.length
+  );
+  if (gridLayout.container && node.children.length > 0) {
+    return (
+      <View
+        key={key}
+        style={[style as ViewStyle, gridLayout.container]}
+        {...a11y}
+      >
+        {renderNodes(node.children, ctx, key).map((child, i) => (
+          <View
+            key={`${key}_gc_${i}`}
+            style={[
+              gridCellStyle,
+              {
+                flexBasis: `${gridLayout.childFlexBasisPct!}%`,
+              },
+            ]}
+          >
+            {child}
+          </View>
+        ))}
+      </View>
     );
   }
 
@@ -342,4 +376,12 @@ const hrBaseStyle: ViewStyle = {
   width: '100%',
   height: StyleSheet.hairlineWidth,
   backgroundColor: '#ccc',
+};
+
+const rowStyle: ViewStyle = {
+  flexDirection: 'row',
+};
+
+const gridCellStyle: ViewStyle = {
+  flexShrink: 1,
 };

@@ -18,12 +18,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-
-      - run: corepack enable
-      - run: yarn install --immutable
+      - uses: ./.github/actions/setup
       - run: yarn prepare
       - run: yarn test --ci
 
@@ -32,9 +27,8 @@ jobs:
         with:
           node-version-file: .nvmrc
           registry-url: https://registry.npmjs.org
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - run: npm publish --access public
 
       - name: Publish to GitHub Packages
         uses: actions/setup-node@v4

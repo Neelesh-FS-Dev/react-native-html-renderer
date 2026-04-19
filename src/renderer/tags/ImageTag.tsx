@@ -80,14 +80,17 @@ const ImageInner = memo(function ImageInner({
       ? { width: attrWidth, height: attrHeight }
       : (cached ?? null);
 
+  const lazy = ctx.lazyLoadImages && !cached;
   const [dimensions, setDimensions] = useState<ImageDimensions | null>(
     initialDims
   );
   const [loading, setLoading] = useState(!initialDims);
   const [errored, setErrored] = useState(false);
+  const [visible, setVisible] = useState(!lazy);
 
   useEffect(() => {
     if (dimensions) return;
+    if (!visible) return;
 
     let cancelled = false;
 
@@ -112,7 +115,7 @@ const ImageInner = memo(function ImageInner({
     return () => {
       cancelled = true;
     };
-  }, [src, dimensions]);
+  }, [src, dimensions, visible]);
 
   const handlePress = useCallback(() => {
     ctx.onImagePress?.(src, node.attributes);
@@ -152,9 +155,12 @@ const ImageInner = memo(function ImageInner({
     );
   }
 
+  const onContainerLayout =
+    lazy && !visible ? () => setVisible(true) : undefined;
+
   const imageElement = (
-    <View key={nodeKey}>
-      {loading && (
+    <View key={nodeKey} onLayout={onContainerLayout}>
+      {(loading || !visible) && (
         <View
           style={[
             loadingContainer,
@@ -164,21 +170,23 @@ const ImageInner = memo(function ImageInner({
           <ActivityIndicator size="small" />
         </View>
       )}
-      <Image
-        source={{ uri: src }}
-        style={[
-          { width: displayWidth, height: displayHeight } as ImageStyle,
-          style as ImageStyle,
-        ]}
-        accessibilityRole="image"
-        accessibilityLabel={a11yLabel}
-        resizeMode="contain"
-        onLoad={() => setLoading(false)}
-        onError={() => {
-          setErrored(true);
-          setLoading(false);
-        }}
-      />
+      {visible && (
+        <Image
+          source={{ uri: src }}
+          style={[
+            { width: displayWidth, height: displayHeight } as ImageStyle,
+            style as ImageStyle,
+          ]}
+          accessibilityRole="image"
+          accessibilityLabel={a11yLabel}
+          resizeMode="contain"
+          onLoad={() => setLoading(false)}
+          onError={() => {
+            setErrored(true);
+            setLoading(false);
+          }}
+        />
+      )}
     </View>
   );
 

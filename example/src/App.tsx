@@ -90,13 +90,39 @@ console.log(greeting);</pre>
   <h2>Horizontal Rule</h2>
   <hr />
 
-  <h2>Form Elements (read-only)</h2>
+  <h2>Interactive Forms</h2>
   <p>Text input:</p>
-  <input type="text" value="Sample input value" />
+  <input type="text" name="sample" value="Sample input value" />
   <p>Checkbox:</p>
-  <input type="checkbox" checked />
+  <input type="checkbox" name="agree" checked /> I agree
+  <p>Radio group:</p>
+  <input type="radio" name="plan" value="free" checked /> Free
+  <input type="radio" name="plan" value="pro" /> Pro
+  <p>Select:</p>
+  <select name="color">
+    <option value="red">Red</option>
+    <option value="green" selected>Green</option>
+    <option value="blue">Blue</option>
+  </select>
   <p>Button:</p>
   <button>Click Me</button>
+
+  <h2>Inline SVG</h2>
+  <svg viewBox="0 0 100 60" width="200" height="120">
+    <rect x="5" y="5" width="30" height="30" fill="#3b82f6" rx="4"/>
+    <circle cx="60" cy="30" r="20" fill="#10b981"/>
+    <line x1="0" y1="55" x2="100" y2="55" stroke="#ef4444" stroke-width="2"/>
+  </svg>
+
+  <h2>CSS Grid (3 columns)</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8">
+    <div style="background:#fee2e2;padding:8">One</div>
+    <div style="background:#dbeafe;padding:8">Two</div>
+    <div style="background:#dcfce7;padding:8">Three</div>
+  </div>
+
+  <h2>RTL content</h2>
+  <p lang="ar" dir="rtl">مرحبا بالعالم — Hello World</p>
 
   <h2>Security (XSS stripped)</h2>
   <p>Script tags are stripped: <script>alert("xss")</script>safe content.</p>
@@ -112,22 +138,20 @@ console.log(greeting);</pre>
   <audio src="audio.mp3" aria-label="Demo audio"></audio>
 `;
 
+const blockquoteStyle = StyleSheet.create({
+  blockquote: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#3b82f6',
+    backgroundColor: '#eff6ff',
+    paddingLeft: 16,
+    paddingVertical: 12,
+    marginVertical: 8,
+    borderRadius: 6,
+  },
+});
+
 function customBlockquote({ children }: CustomRendererProps) {
-  return (
-    <View
-      style={{
-        borderLeftWidth: 4,
-        borderLeftColor: '#3b82f6',
-        backgroundColor: '#eff6ff',
-        paddingLeft: 16,
-        paddingVertical: 12,
-        marginVertical: 8,
-        borderRadius: 6,
-      }}
-    >
-      {children}
-    </View>
-  );
+  return <View style={blockquoteStyle.blockquote}>{children}</View>;
 }
 
 export default function App() {
@@ -149,6 +173,13 @@ export default function App() {
             html={sampleHTML}
             contentWidth={contentWidth}
             onLinkPress={(href: string) => Linking.openURL(href)}
+            onFormChange={(field, nextState) =>
+              console.log('[form]', field, nextState)
+            }
+            lazyLoadImages
+            mediaQueries={[
+              { maxWidth: 400, tagsStyles: { h1: { fontSize: 22 } } },
+            ]}
             customRenderers={{ blockquote: customBlockquote }}
             tagsStyles={{
               h1: {

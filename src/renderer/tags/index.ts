@@ -6,3 +6,4 @@ export { TableTag } from './TableTags';
 export { BlockTag } from './BlockTags';
 export { InputTag, TextareaTag, ButtonTag, SelectTag } from './FormTags';
 export { VideoTag, AudioTag } from './MediaTags';
+export { SvgTag } from './SvgTag';

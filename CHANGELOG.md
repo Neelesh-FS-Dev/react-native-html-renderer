@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Interactive forms** — `<input>`, `<textarea>`, `<select>`, `<button>` are now toggleable/editable. `initialFormState` seeds values; `onFormChange(field, nextState)` fires on every change.
+- **Plugin system** — global `registerRenderer`/`unregisterRenderer`/`installPlugin`/`uninstallPlugin`, plus a `plugins` prop for per-instance renderers.
+- **Lifecycle callbacks** — `onBeforeRender(nodes)`, `onAfterRender({ nodeCount, durationMs, parseDurationMs })`, `onMeasure(layout)`.
+- **Performance** — `virtualized` renders the top-level doc as a `FlatList`; `lazyLoadImages` defers off-screen image fetches.
+- **Inline SVG** — built-in renderer for `rect`, `circle`, `ellipse`, `line`, `text`, `g`. Pass `svgRenderer` to delegate to `react-native-svg`.
+- **Video/audio adapters** — `videoRenderer` / `audioRenderer` props wire in `expo-video`, `expo-av` or `react-native-video`.
+- **CSS enhancements** — `mediaQueries` prop (min/max width breakpoints); inline CSS Grid simulation for `display:grid; grid-template-columns: repeat(N, 1fr)`.
+- **i18n** — automatic RTL detection from `dir`/`lang`; `I18nOptions` prop; `detectDirection`, `detectLocale`, `formatNumber` helpers.
+- **Utility functions** — `extractLinks`, `extractImages`, `htmlToText`, `generateTOC`, `markdownToHtml`.
+- **Dev tools** — `inspectTree`, `formatInspectorTree`, `profile`, `accessibilityAudit`.
+- **Advanced caching** — `configurePersistentCache` (AsyncStorage/MMKV-compatible adapter), `preloadHtml`, `preloadImages`, TTL, `clearAllCaches`, `hydrateDOMCache`.
+
+### Changed
+
+- Sanitizer no longer strips `<svg>` or `<form>` by default — their children are still sanitized recursively (nested `<script>` and `on*` handlers continue to be removed).
+- `InputTag` / `TextareaTag` / `ButtonTag` / `SelectTag` are now interactive rather than read-only visual placeholders.
+
 ## [0.2.0] - 2026-04-06
 
 ### Added

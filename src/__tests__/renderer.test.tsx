@@ -207,15 +207,15 @@ describe('HtmlRenderer', () => {
     expect(screen.queryByText('alert("xss")')).toBeNull();
   });
 
-  it('renders form elements in read-only mode', () => {
-    render(
+  it('renders interactive form elements', () => {
+    const { getByText, getByDisplayValue } = render(
       <HtmlRenderer
         html='<input type="text" value="readonly" /><button>Submit</button>'
         {...defaultProps}
       />
     );
-    expect(screen.getByText('readonly')).toBeTruthy();
-    expect(screen.getByText('Submit')).toBeTruthy();
+    expect(getByDisplayValue('readonly')).toBeTruthy();
+    expect(getByText('Submit')).toBeTruthy();
   });
 
   it('renders video placeholder', () => {

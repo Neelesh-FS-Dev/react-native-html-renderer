@@ -99,7 +99,7 @@ export const ListTag = memo(function ListTag({
               <View style={liRowStyle}>
                 {prefix}
                 <Text
-                  style={[liStyle as TextStyle, { flex: 1 }]}
+                  style={[liStyle as TextStyle, liTextStyle]}
                   allowFontScaling={ctx.allowFontScaling}
                   maxFontSizeMultiplier={ctx.maxFontSizeMultiplier}
                   {...ctx.defaultTextProps}
@@ -122,7 +122,7 @@ export const ListTag = memo(function ListTag({
           <View key={liKey} style={liRowStyle}>
             {prefix}
             <Text
-              style={[liStyle as TextStyle, { flex: 1 }]}
+              style={[liStyle as TextStyle, liTextStyle]}
               allowFontScaling={ctx.allowFontScaling}
               maxFontSizeMultiplier={ctx.maxFontSizeMultiplier}
               {...ctx.defaultTextProps}
@@ -145,4 +145,8 @@ const bulletStyle: TextStyle = {
   width: 20,
   textAlign: 'right',
   marginRight: 4,
+};
+
+const liTextStyle: TextStyle = {
+  flex: 1,
 };

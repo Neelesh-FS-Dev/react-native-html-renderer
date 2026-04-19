@@ -19,6 +19,11 @@ const DEFAULT_CONTEXT: HtmlRendererContextValue = {
   darkModeStyles: {},
   allowFontScaling: true,
   maxFontSizeMultiplier: undefined,
+  lazyLoadImages: false,
+  formState: {},
+  setFormField: () => {},
+  writingDirection: 'ltr',
+  locale: undefined,
 };
 
 export const HtmlRendererContext =

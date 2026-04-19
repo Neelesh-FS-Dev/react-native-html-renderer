@@ -16,7 +16,24 @@ export {
   setCachedDOM,
   clearDOMCache,
   buildDOMCacheKey,
+  configurePersistentCache,
+  hydrateDOMCache,
+  persistDOM,
+  preloadHtml,
+  preloadImages,
+  clearAllCaches,
 } from './cache';
+export {
+  extractLinks,
+  extractImages,
+  htmlToText,
+  generateTOC,
+  type ExtractedLink,
+  type ExtractedImage,
+  type TOCEntry,
+} from './extractors';
+export { markdownToHtml } from './markdown';
+export { detectDirection, detectLocale, formatNumber } from './i18n';
 
 // ---------------------------------------------------------------------------
 // CSS unit conversion
