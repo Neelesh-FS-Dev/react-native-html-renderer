@@ -29,6 +29,8 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish to GitHub Packages
         uses: actions/setup-node@v4
