@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-04-19
+
 ### Added
 
 - **Interactive forms** — `<input>`, `<textarea>`, `<select>`, `<button>` are now toggleable/editable. `initialFormState` seeds values; `onFormChange(field, nextState)` fires on every change.
