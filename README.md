@@ -9,7 +9,7 @@ Renders HTML into 100% native React Native views — actively maintained, TypeSc
 
 A modern replacement for the abandoned `react-native-render-html`.
 
-## What's new in 1.3
+## What's new in 2.0
 
 - **Interactive forms** — checkboxes, radios, text inputs and selects are now toggleable/editable. `onFormChange` emits every change.
 - **Plugin system** — `registerRenderer`, `installPlugin` and a `plugins` prop for third-party custom tag handlers.
